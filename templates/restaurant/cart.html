@@ -1,0 +1,14 @@
+<h1>Keranjang Belanja</h1>
+
+<ul>
+    {% for item in items %}
+        <li>
+            {{ item.menu.nama_makanan }} — {{ item.qty }} x {{ item.menu.harga }}  
+            = <strong>{{ item.subtotal }}</strong>
+        </li>
+    {% empty %}
+        <li>Keranjang kamu kosong.</li>
+    {% endfor %}
+</ul>
+
+<p><strong>Total:</strong> {{ total }}</p>

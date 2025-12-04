@@ -1,0 +1,25 @@
+<h1>Lengkapi Profil Restoran</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Nama Restoran:</label><br>
+    <input type="text" name="nama_restoran" required><br><br>
+
+    <label>Alamat:</label><br>
+    <input type="text" name="alamat"><br><br>
+
+    <label>Deskripsi:</label><br>
+    <textarea name="deskripsi"></textarea><br><br>
+
+    <label>Jam Buka:</label><br>
+    <input type="time" name="jam_buka"><br><br>
+
+    <label>Jam Tutup:</label><br>
+    <input type="time" name="jam_tutup"><br><br>
+
+    <label>Foto/Logo:</label><br>
+    <input type="file" name="foto_logo"><br><br>
+
+    <button type="submit">Simpan Profil</button>
+</form>

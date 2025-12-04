@@ -1,0 +1,9 @@
+<h1>Hapus Menu</h1>
+
+<p>Apakah kamu yakin ingin menghapus menu: <b>{{ menu.nama_makanan }}</b> ?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Ya, Hapus</button>
+    <a href="/restaurant/menu/">Batal</a>
+</form>

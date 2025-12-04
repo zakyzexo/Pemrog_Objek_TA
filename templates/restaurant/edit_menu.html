@@ -1,0 +1,56 @@
+<h1>Edit Menu</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Nama Menu:</label><br>
+    <input type="text" name="nama_makanan" value="{{ menu.nama_makanan }}" required><br><br>
+
+    <label>Harga:</label><br>
+    <input type="number" name="harga" value="{{ menu.harga }}" required><br><br>
+
+    <label>Deskripsi:</label><br>
+    <textarea name="deskripsi">{{ menu.deskripsi }}</textarea><br><br>
+
+    <label>Status:</label><br>
+    <select name="status">
+        <option value="available" {% if menu.status == "available" %}selected{% endif %}>Tersedia</option>
+        <option value="sold_out" {% if menu.status == "sold_out" %}selected{% endif %}>Habis</option>
+    </select>
+    <br><br>
+
+    <label>Foto Lama:</label><br>
+    {% if menu.foto_makanan %}
+        <img src="{{ menu.foto_makanan.url }}" width="100"><br>
+    {% else %}
+        <i>Tidak ada foto</i><br>
+    {% endif %}
+    <br>
+
+    <label>Ganti Foto:</label>
+    <input type="file" name="foto_makanan"><br><br>
+
+    <button type="submit">Simpan Perubahan</button>
+</form>
+
+<br>
+<a href="/restaurant/menu/">Kembali</a>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function showLoading() {
+    Swal.fire({
+        title: "Menyimpan...",
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    });
+}
+</script>
+
+<form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+

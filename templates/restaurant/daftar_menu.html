@@ -1,0 +1,84 @@
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    {% for msg in messages %}
+    Swal.fire({
+        title: "Berhasil!",
+        text: "{{ msg }}",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+    });
+    {% endfor %}
+</script>
+{% endif %}
+
+
+
+
+<h1>Daftar Menu</h1>
+
+<a href="/restaurant/tambah-menu/">+ Tambah Menu</a>
+<br /><br />
+
+<table border="1" cellpadding="6">
+  <tr>
+    <th>Nama</th>
+    <th>Harga</th>
+    <th>Status</th>
+    <th>Aksi</th>
+  </tr>
+
+  {% for item in menu_list %}
+  <tr>
+    <td>{{ item.nama_makanan }}</td>
+    <td>{{ item.harga }}</td>
+    <td>{{ item.get_status_display }}</td>
+    <td>
+      <a href="/restaurant/edit-menu/{{ item.id }}/">Edit</a> |
+
+      <!-- Tombol hapus pakai SweetAlert -->
+      <a href="#" onclick="confirmDelete('{{ item.id }}')">Hapus</a>
+
+      <!-- Form hapus tersembunyi -->
+      <form
+        id="form-hapus-{{ item.id }}"
+        action="/restaurant/hapus-menu/{{ item.id }}/"
+        method="POST"
+        style="display: none"
+      >
+        {% csrf_token %}
+      </form>
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="4">Belum ada menu.</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<br />
+<a href="/accounts/restaurant/dashboard/">Kembali ke Dashboard</a>
+
+
+
+function confirmDelete(menuId) {
+    Swal.fire({
+        title: "Yakin ingin menghapus?",
+        text: "Menu yang dihapus tidak bisa dikembalikan!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Ya, hapus!",
+        cancelButtonText: "Batal"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById("form-hapus-" + menuId).submit();
+        }
+    });
+}
+</script>
+
+

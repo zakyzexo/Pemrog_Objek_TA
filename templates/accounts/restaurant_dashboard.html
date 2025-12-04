@@ -1,0 +1,13 @@
+<h1>Dashboard Restoran</h1>
+
+<p>Selamat datang, {{ user.username }}!</p>
+
+<h3>Informasi Restoran</h3>
+<p>Nama: {{ restaurant.nama_restoran }}</p>
+<p>Status: {{ restaurant.status_buka|yesno:"Buka,Tutup" }}</p>
+
+<ul>
+    <li><a href="/restaurant/menu/">Kelola Menu</a></li>
+    <li><a href="/restaurant/orders/">Pesanan Masuk</a></li>
+    <li><a href="/accounts/logout/">Logout</a></li>
+</ul>

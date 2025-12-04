@@ -1,0 +1,68 @@
+<h1>Dashboard Restoran</h1>
+<h3>{{ resto.nama_restoran }}</h3>
+
+<hr>
+
+<h2>Statistik</h2>
+
+<div style="display: flex; gap: 20px;">
+
+    <div style="padding: 15px; border: 1px solid #ccc; width: 180px;">
+        <h3>Total Menu</h3>
+        <p style="font-size: 24px;">{{ total_menu }}</p>
+    </div>
+
+    <div style="padding: 15px; border: 1px solid #ccc; width: 180px;">
+        <h3>Pesanan Masuk</h3>
+        <p style="font-size: 24px;">{{ total_masuk }}</p>
+    </div>
+
+    <div style="padding: 15px; border: 1px solid #ccc; width: 180px;">
+        <h3>Pesanan Selesai</h3>
+        <p style="font-size: 24px;">{{ total_selesai }}</p>
+    </div>
+
+    <div style="padding: 15px; border: 1px solid #ccc; width: 180px;">
+        <h3>Pesanan Batal</h3>
+        <p style="font-size: 24px;">{{ total_batal }}</p>
+    </div>
+</div>
+
+<hr>
+
+<h2>Menu Pintas</h2>
+<ul>
+    <li><a href="/restaurant/menu/">Kelola Menu</a></li>
+    <li><a href="/restaurant/orders/">Pesanan Masuk</a></li>
+</ul>
+
+<hr>
+
+<h2>5 Pesanan Terbaru</h2>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>ID</th>
+        <th>Customer</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th>Tanggal</th>
+        <th>Aksi</th>
+    </tr>
+
+    {% for p in pesanan_terbaru %}
+    <tr>
+        <td>#{{ p.id }}</td>
+        <td>{{ p.customer.username }}</td>
+        <td>{{ p.get_status_display }}</td>
+        <td>{{ p.total_harga }}</td>
+        <td>{{ p.created_at|date:"d M Y H:i" }}</td>
+        <td><a href="/restaurant/orders/{{ p.id }}/">Detail</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Belum ada pesanan</td></tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="/accounts/logout/">Logout</a>

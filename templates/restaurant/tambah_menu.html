@@ -1,0 +1,50 @@
+<h2 style="color:red;">TEMPLATE RESTAURANT_V1</h2>
+
+<h1>Tambah Menu</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    <p style="color:blue;">FORM VERSION 2</p>
+
+    {% csrf_token %}
+    
+    <label>Nama Menu:</label><br>
+    <input type="text" name="nama_makanan" required><br><br>
+
+    <label>Harga:</label><br>
+    <input type="number" name="harga" required><br><br>
+
+    <label>Deskripsi:</label><br>
+    <textarea name="deskripsi"></textarea><br><br>
+
+    <label>Foto:</label><br>
+    <input type="file" name="foto_makanan"><br><br>
+
+    <label>Tersedia?</label>
+    <select name="status">
+    <option value="available">Tersedia</option>
+    <option value="sold_out">Habis</option>
+    </select>
+
+    <button type="submit">Simpan</button>
+</form>
+
+<br>
+<a href="/restaurant/menu/">Kembali</a>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function showLoading() {
+    Swal.fire({
+        title: "Menyimpan...",
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    });
+}
+</script>
+
+<form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+
