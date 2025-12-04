@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
 from orders.models import Order
-from accounts.models import Profile, RestaurantProfile, DriverProfile
+from restaurant.models import RestaurantProfile
+from accounts.models import CustomerProfile, DriverProfile
 from .forms import RegisterForm
 from .models import Profile, RestaurantProfile, CustomerProfile, DriverProfile
 
@@ -70,12 +71,13 @@ def redirect_after_login(request):
 
 
 
-
+@role_required("customer")
 @login_required
 def customer_dashboard(request):
     return render(request, 'accounts/customer_dashboard.html')
 
 
+@role_required("restaurant")
 @login_required
 def restaurant_dashboard(request):
     user = request.user

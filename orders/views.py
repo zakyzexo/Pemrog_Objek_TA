@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from orders.models import Order, OrderItem
@@ -19,6 +20,8 @@ def customer_orders(request):
 
 @login_required
 def checkout(request):
+    if request.user.profile.role != "customer":
+        return redirect("login")
     user = request.user
 
     # Ambil cart user

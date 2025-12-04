@@ -18,7 +18,7 @@
 
 <h1>Daftar Menu</h1>
 
-<a href="/restaurant/tambah-menu/">+ Tambah Menu</a>
+<a href="{% url 'tambah_menu' %}">+ Tambah Menu</a>
 <br /><br />
 
 <table border="1" cellpadding="6">
@@ -35,7 +35,7 @@
     <td>{{ item.harga }}</td>
     <td>{{ item.get_status_display }}</td>
     <td>
-      <a href="/restaurant/edit-menu/{{ item.id }}/">Edit</a> |
+      <a href="{% url 'edit_menu' item.id %}">Edit</a> |
 
       <!-- Tombol hapus pakai SweetAlert -->
       <a href="#" onclick="confirmDelete('{{ item.id }}')">Hapus</a>
@@ -43,7 +43,7 @@
       <!-- Form hapus tersembunyi -->
       <form
         id="form-hapus-{{ item.id }}"
-        action="/restaurant/hapus-menu/{{ item.id }}/"
+        action="{% url 'hapus_menu' item.id %}"
         method="POST"
         style="display: none"
       >

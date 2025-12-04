@@ -12,6 +12,7 @@ from orders.models import Order, OrderItem
 from decimal import Decimal
 
 
+@role_required("restaurant")
 @login_required
 def tambah_menu(request):
     user = request.user
@@ -51,6 +52,7 @@ def tambah_menu(request):
 
 
 
+@role_required("restaurant")
 @login_required
 def daftar_menu(request):
     user = request.user
@@ -69,6 +71,7 @@ def daftar_menu(request):
     return render(request, 'restaurant/daftar_menu.html', {'menu_list': menu_list})
 
 
+@role_required("restaurant")
 @login_required
 def edit_menu(request, id):
     user = request.user
@@ -102,6 +105,7 @@ def edit_menu(request, id):
     return redirect('daftar_menu')
 
 
+@role_required("restaurant")
 @login_required
 def delete_menu(request, id):
     user = request.user
@@ -211,6 +215,7 @@ def detail_order(request, order_id):
     })
 
 
+@role_required("restaurant")
 @login_required
 def restaurant_dashboard(request):
     user = request.user
@@ -239,6 +244,8 @@ def restaurant_dashboard(request):
         'pesanan_terbaru': pesanan_terbaru,
     })
 
+
+@role_required("restaurant")
 @login_required
 def restaurant_orders(request):
     # pastikan user adalah restaurant
@@ -388,6 +395,8 @@ def checkout(request):
     messages.success(request, "Pesanan berhasil dibuat!")
     return redirect("customer_dashboard")
 
+
+@role_required("restaurant")
 @login_required
 def restaurant_orders(request):
     resto = RestaurantProfile.objects.get(user=request.user)
@@ -407,6 +416,8 @@ def restaurant_order_detail(request, order_id):
         "items": items
     })
 
+
+@role_required("restaurant")
 @login_required
 def update_order_status(request, order_id):
     order = Order.objects.get(id=order_id)
