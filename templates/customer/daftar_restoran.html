@@ -1,0 +1,23 @@
+<h1>Daftar Restoran</h1>
+
+{% for r in restoran_list %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    
+    <h2>{{ r.nama_restoran }}</h2>
+    <p>{{ r.alamat }}</p>
+    <p>{{ r.deskripsi|truncatewords:20 }}</p>
+
+    <p>Status:
+        {% if r.status_buka %}
+            <b style="color:green;">Buka</b>
+        {% else %}
+            <b style="color:red;">Tutup</b>
+        {% endif %}
+    </p>
+
+    <a href="{% url 'customer_lihat_menu' r.id %}">Lihat Menu</a>
+
+</div>
+{% empty %}
+<p>Belum ada restoran terdaftar.</p>
+{% endfor %}

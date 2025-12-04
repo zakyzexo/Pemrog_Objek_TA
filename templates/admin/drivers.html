@@ -1,0 +1,15 @@
+<h1>Daftar Driver</h1>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Nama User</th>
+        <th>No HP</th>
+    </tr>
+
+    {% for d in drivers %}
+    <tr>
+        <td>{{ d.user.username }}</td>
+        <td>{{ d.no_hp }}</td>
+    </tr>
+    {% endfor %}
+</table>

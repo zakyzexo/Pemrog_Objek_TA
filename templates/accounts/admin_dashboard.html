@@ -1,10 +1,20 @@
-<h1>Dashboard Admin Sistem</h1>
+<h1>Dashboard Admin</h1>
 
-<p>Selamat datang, {{ user.username }}!</p>
+<p>Total User: {{ total_users }}</p>
+<p>Total Restoran: {{ total_rest }}</p>
+<p>Total Driver: {{ total_driver }}</p>
+<p>Total Order: {{ total_orders }}</p>
 
+<h3>Status Order</h3>
 <ul>
-    <li><a href="/admin/">Admin Panel Django</a></li>
-    <li><a href="/restaurant/">Daftar Restoran</a></li>
-    <li><a href="/accounts/customer/dashboard/">Contoh Dashboard Customer</a></li>
-    <li><a href="/accounts/logout/">Logout</a></li>
+    <li>Pending: {{ status_count.pending }}</li>
+    <li>Diproses: {{ status_count.processing }}</li>
+    <li>Diantar: {{ status_count.delivering }}</li>
+    <li>Selesai: {{ status_count.finished }}</li>
 </ul>
+
+<br>
+<a href="/accounts/admin/users/">Kelola User</a><br>
+<a href="/accounts/admin/restaurants/">Kelola Restoran</a><br>
+<a href="/accounts/admin/drivers/">Kelola Driver</a><br>
+<a href="/accounts/admin/orders/">Kelola Pesanan</a><br>

@@ -1,0 +1,21 @@
+<h1>Daftar Pesanan</h1>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>ID</th>
+        <th>Pelanggan</th>
+        <th>Restoran</th>
+        <th>Status</th>
+        <th>Total</th>
+    </tr>
+
+    {% for o in orders %}
+    <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.customer.username }}</td>
+        <td>{{ o.restaurant.nama_restoran }}</td>
+        <td>{{ o.get_status_display }}</td>
+        <td>{{ o.total_harga }}</td>
+    </tr>
+    {% endfor %}
+</table>

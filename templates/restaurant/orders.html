@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Pesanan Masuk</h2>
+
+<style>
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.table th, .table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+.table th {
+    background: #f5f5f5;
+    text-align: left;
+}
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+.pending { background: #ff9800; }
+.processing { background: #2196f3; }
+.delivering { background: #9c27b0; }
+.finished { background: #4caf50; }
+.cancelled { background: #f44336; }
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #2196f3;
+    color: white;
+}
+button:hover {
+    background: #1976d2;
+}
+</style>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Pelanggan</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.customer.username }}</td>
+                    <td>Rp {{ order.total_harga }}</td>
+
+                    <td>
+                        <span class="badge 
+                            {% if order.status == 'pending' %} bg-warning 
+                            {% elif order.status == 'processing' %} bg-info 
+                            {% elif order.status == 'ready' %} bg-success 
+                            {% elif order.status == 'on_delivery' %} bg-primary 
+                            {% else %} bg-secondary {% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <a href="/restaurant/orders/{{ order.id }}/" 
+                           class="btn btn-sm btn-primary">
+                           Detail
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Belum ada pesanan
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

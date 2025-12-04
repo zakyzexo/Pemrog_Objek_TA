@@ -1,0 +1,104 @@
+<h1>Menu dari {{ resto.nama_restoran }}</h1>
+
+{% for menu in menu_list %}
+<div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px">
+  <h3>{{ menu.nama_makanan }}</h3>
+  <p>{{ menu.deskripsi }}</p>
+  <p>Harga: {{ menu.harga }}</p>
+
+  {% if menu.status == 'available' %}
+  <span style="color: green">Tersedia</span>
+  {% else %}
+  <span style="color: red">Habis</span>
+  {% endif %}
+
+  <br /><br />
+  <button
+    onclick="openModal('{{ menu.id }}', '{{ menu.nama_makanan }}', '{{ menu.harga }}')"
+  >
+    Tambah ke Keranjang
+  </button>
+</div>
+{% empty %}
+<p>Belum ada menu.</p>
+{% endfor %}
+
+<!-- css modal -->
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    margin: 10% auto;
+    width: 300px;
+    border-radius: 10px;
+  }
+</style>
+
+<!-- Modal Add to Cart -->
+
+<div id="cartModal" class="modal">
+  <div class="modal-content">
+    <h2 id="modalNama"></h2>
+    <p>Harga: <span id="modalHarga"></span></p>
+
+    <label>Jumlah:</label>
+    <input type="number" id="modalQty" value="1" min="1" />
+
+    <br /><br />
+    <button onclick="submitCart()">Tambah ke Keranjang</button>
+    <button onclick="closeModal()" style="background: red; color: white">
+      Batal
+    </button>
+
+    <!-- hidden menu id -->
+    <input type="hidden" id="modalMenuId" />
+  </div>
+</div>
+
+<!-- js modal -->
+
+<script>
+function openModal(id, nama, harga) {
+  document.getElementById("modalNama").innerText = nama;
+  document.getElementById("modalHarga").innerText = harga;
+  document.getElementById("modalMenuId").value = id;
+  document.getElementById("modalQty").value = 1;
+
+  document.getElementById("cartModal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("cartModal").style.display = "none";
+}
+
+function submitCart() {
+  const menuId = document.getElementById("modalMenuId").value;
+  const qty = document.getElementById("modalQty").value;
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = `/restaurant/cart/add/${menuId}/`;
+
+  const csrfToken = "{{ csrf_token }}";
+
+  form.innerHTML = `
+      <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+      <input type="hidden" name="qty" value="${qty}">
+  `;
+
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+

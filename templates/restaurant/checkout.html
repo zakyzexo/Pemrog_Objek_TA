@@ -1,0 +1,42 @@
+<h1>Checkout</h1>
+
+<h3>Daftar Pesanan:</h3>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Menu</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+    </tr>
+
+    {% for item in items %}
+    <tr>
+        <td>{{ item.menu.nama_makanan }}</td>
+        <td>{{ item.qty }}</td>
+        <td>{{ item.subtotal }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">Keranjang kosong</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Total: {{ total }}</h3>
+
+<br>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Alamat Pengiriman:</label><br>
+    <textarea name="alamat" required placeholder="Masukkan alamat lengkap"></textarea>
+    <br><br>
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <button type="submit">Buat Pesanan</button>
+</form>
+
+<br>
+<a href="/restaurant/cart/">← Kembali ke Keranjang</a>

@@ -9,6 +9,7 @@ from .models import Menu
 from accounts.models import RestaurantProfile
 from django.contrib import messages
 from orders.models import Order, OrderItem
+from decimal import Decimal
 
 
 @login_required
@@ -238,3 +239,276 @@ def restaurant_dashboard(request):
         'pesanan_terbaru': pesanan_terbaru,
     })
 
+@login_required
+def restaurant_orders(request):
+    # pastikan user adalah restaurant
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    if profile.role != "restaurant":
+        return redirect("home")
+
+    restaurant = RestaurantProfile.objects.get(user=user)
+
+    # 🔥 Ambil semua order milik restoran ini
+    orders = Order.objects.filter(restaurant=restaurant).order_by('-created_at')
+
+    return render(request, "restaurant/orders_list.html", {
+        "orders": orders
+    })
+
+
+@login_required
+def order_detail(request, order_id):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+
+    # Pastikan role = restaurant
+    if profile.role != 'restaurant':
+        return redirect('home')
+
+    restaurant = RestaurantProfile.objects.get(user=user)
+
+    # Ambil order
+    try:
+        order = Order.objects.get(id=order_id, restaurant=restaurant)
+    except Order.DoesNotExist:
+        return redirect('restaurant_orders')
+
+    items = OrderItem.objects.filter(order=order)
+
+    # Jika update status
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        order.status = new_status
+        order.save()
+
+        messages.success(request, "Status pesanan berhasil diperbarui!")
+        return redirect('order_detail', order_id=order_id)
+
+    return render(request, "restaurant/order_detail.html", {
+        "order": order,
+        "items": items
+    })
+
+
+# .....customer views 
+
+def customer_list_restaurant(request):
+    restoran_list = RestaurantProfile.objects.all()
+    return render(request, "customer/daftar_restoran.html", {
+        "restoran_list": restoran_list
+    })
+
+def customer_lihat_menu(request, resto_id):
+    resto = get_object_or_404(RestaurantProfile, id=resto_id)
+    menu_list = Menu.objects.filter(restaurant=resto)
+
+    return render(request, "customer/menu_restoran.html", {
+        "resto": resto,
+        "menu_list": menu_list
+    })
+
+
+@login_required
+def add_to_cart(request, menu_id):
+    if request.method != "POST":
+        return redirect("/")
+
+    qty = int(request.POST.get("qty", 1))
+
+    menu = Menu.objects.get(id=menu_id)
+
+    # cari cart customer
+    cart, created = Cart.objects.get_or_create(customer=request.user)
+
+    # cek apakah item sudah ada di cart
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        menu=menu,
+        defaults={
+            "qty": qty,
+            "subtotal": menu.harga * qty
+        }
+    )
+
+    # jika sudah ada, update quantity
+    if not created:
+        item.qty += qty
+        item.subtotal = Decimal(menu.harga) * item.qty
+        item.save()
+
+    return redirect("lihat_cart")
+
+
+def view_cart(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+
+    total = sum(item.menu.harga * item.qty for item in cart_items)
+
+    return render(request, "restaurant/cart.html", {
+        "cart_items": cart_items,
+        "total": total
+    })
+
+def delete_cart_item(request, item_id):
+    item = get_object_or_404(CartItem, id=item_id, user=request.user)
+    item.delete()
+    messages.success(request, "Item berhasil dihapus dari keranjang.")
+    return redirect("view_cart")
+
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        messages.error(request, "Keranjang masih kosong!")
+        return redirect("view_cart")
+
+    # buat order
+    order = Order.objects.create(
+        customer=request.user,
+        restaurant=cart_items.first().menu.restaurant,
+        total_harga=0,
+        status="pending"
+    )
+
+    total = 0
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            menu=item.menu,
+            qty=item.qty,
+            subtotal=item.menu.harga * item.qty,
+        )
+        total += item.menu.harga * item.qty
+
+    order.total_harga = total
+    order.save()
+
+    cart_items.delete()
+
+    messages.success(request, "Pesanan berhasil dibuat!")
+    return redirect("customer_dashboard")
+
+@login_required
+def restaurant_orders(request):
+    resto = RestaurantProfile.objects.get(user=request.user)
+    orders = Order.objects.filter(restaurant=resto).order_by('-created_at')
+
+    return render(request, 'restaurant/orders.html', {
+        'orders': orders
+    })
+
+@login_required
+def restaurant_order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
+    items = OrderItem.objects.filter(order=order)
+
+    return render(request, "restaurant/order_detail.html", {
+        "order": order,
+        "items": items
+    })
+
+@login_required
+def update_order_status(request, order_id):
+    order = Order.objects.get(id=order_id)
+    new_status = request.POST.get("status")
+
+    order.status = new_status
+    order.save()
+
+    messages.success(request, "Status pesanan diperbarui!")
+    return redirect("restaurant_order_detail", order_id=order_id)
+
+@login_required
+def checkout_page(request):
+    user = request.user
+
+    # ambil cart
+    try:
+        cart = Cart.objects.get(customer=user)
+    except Cart.DoesNotExist:
+        return redirect('lihat_cart')
+
+    items = CartItem.objects.filter(cart=cart)
+
+    # hitung total
+    total = sum([item.subtotal for item in items])
+
+    if request.method == "POST":
+        alamat = request.POST.get("alamat")
+
+        # alamat wajib
+        if not alamat:
+            return render(request, "restaurant/checkout.html", {
+                "items": items,
+                "total": total,
+                "error": "Alamat pengiriman wajib diisi",
+            })
+
+        # simpan alamat di session (nanti dipakai pas buat order)
+        request.session['checkout_alamat'] = alamat
+        
+        # lanjut ke proses order
+        return redirect("buat_order")
+
+    return render(request, "restaurant/checkout.html", {
+        "items": items,
+        "total": total
+    })
+
+
+@login_required
+def buat_order(request):
+    user = request.user
+
+    # Ambil cart
+    try:
+        cart = Cart.objects.get(customer=user)
+    except Cart.DoesNotExist:
+        return redirect('lihat_cart')
+
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    # Cart kosong?
+    if not cart_items:
+        return redirect('lihat_cart')
+
+    # Ambil alamat dari session checkout
+    alamat = request.session.get("checkout_alamat")
+    if not alamat:
+        return redirect("checkout_page")
+
+    # Dapatkan resto dari item pertama
+    restaurant = cart_items[0].menu.restaurant
+
+    # Buat order
+    order = Order.objects.create(
+        customer=user,
+        restaurant=restaurant,
+        status="diterima",
+        total_harga=0  # dihitung nanti
+    )
+
+    total = 0
+
+    # Buat OrderItem satu per item cart
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            menu=item.menu,
+            qty=item.qty,
+            subtotal=item.subtotal
+        )
+        total += item.subtotal
+
+    # Update total
+    order.total_harga = total
+    order.save()
+
+    # Kosongkan cart
+    cart_items.delete()
+
+    # Hapus session alamat
+    del request.session["checkout_alamat"]
+
+    # Redirect ke halaman detail
+    return redirect("detail_order", order_id=order.id)

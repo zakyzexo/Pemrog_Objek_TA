@@ -1,0 +1,6 @@
+<h1>Pesanan Berhasil!</h1>
+
+<p>Kode Pesanan: {{ order.id }}</p>
+<p>Total Pembayaran: {{ order.total_price }}</p>
+
+<a href="{% url 'customer_orders' %}">Lihat Daftar Pesanan</a>

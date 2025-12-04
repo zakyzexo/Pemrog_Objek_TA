@@ -1,0 +1,27 @@
+<h1>Detail Pesanan #{{ order.id }}</h1>
+
+<p><b>Restoran:</b> {{ order.restaurant.nama_restoran }}</p>
+<p><b>Status:</b> {{ order.get_status_display }}</p>
+<p><b>Total:</b> Rp {{ order.total_price }}</p>
+<p><b>Tanggal:</b> {{ order.created_at }}</p>
+
+<hr>
+
+<h3>Item Pesanan:</h3>
+<ul>
+    {% for item in items %}
+        <li>{{ item.menu.nama_makanan }} — {{ item.qty }} x Rp {{ item.price }}</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+{% if order.status == 'pending' %}
+    <a href="/orders/cancel/{{ order.id }}/" 
+       onclick="return confirm('Yakin ingin membatalkan pesanan?')">
+       <button style="background:red;color:white">Batalkan Pesanan</button>
+    </a>
+{% endif %}
+
+<br><br>
+<a href="/orders/customer/">Kembali ke daftar pesanan</a>

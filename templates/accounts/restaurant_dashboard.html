@@ -1,13 +1,136 @@
-<h1>Dashboard Restoran</h1>
+<!-- <h1>Dashboard Restoran</h1>
+<h3>{{ resto.nama_restoran }}</h3>
 
-<p>Selamat datang, {{ user.username }}!</p>
+<hr />
 
-<h3>Informasi Restoran</h3>
-<p>Nama: {{ restaurant.nama_restoran }}</p>
-<p>Status: {{ restaurant.status_buka|yesno:"Buka,Tutup" }}</p>
+<h2>Statistik</h2>
 
+<div style="display: flex; gap: 20px">
+  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
+    <h3>Total Menu</h3>
+    <p style="font-size: 24px">{{ total_menu }}</p>
+  </div>
+
+  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
+    <h3>Pesanan Masuk</h3>
+    <p style="font-size: 24px">{{ total_masuk }}</p>
+  </div>
+
+  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
+    <h3>Pesanan Selesai</h3>
+    <p style="font-size: 24px">{{ total_selesai }}</p>
+  </div>
+
+  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
+    <h3>Pesanan Batal</h3>
+    <p style="font-size: 24px">{{ total_batal }}</p>
+  </div>
+</div>
+
+<hr />
+
+<h2>Menu Pintas</h2>
 <ul>
-    <li><a href="/restaurant/menu/">Kelola Menu</a></li>
-    <li><a href="/restaurant/orders/">Pesanan Masuk</a></li>
-    <li><a href="/accounts/logout/">Logout</a></li>
+  <li><a href="/restaurant/menu/">Kelola Menu</a></li>
+  <li><a href="/restaurant/orders/">Pesanan Masuk</a></li>
 </ul>
+
+<hr />
+
+<h2>5 Pesanan Terbaru</h2>
+
+<table border="1" cellpadding="6">
+  <tr>
+    <th>ID</th>
+    <th>Customer</th>
+    <th>Status</th>
+    <th>Total</th>
+    <th>Tanggal</th>
+    <th>Aksi</th>
+  </tr>
+
+  {% for p in pesanan_terbaru %}
+  <tr>
+    <td>#{{ p.id }}</td>
+    <td>{{ p.customer.username }}</td>
+    <td>{{ p.get_status_display }}</td>
+    <td>{{ p.total_harga }}</td>
+    <td>{{ p.created_at|date:"d M Y H:i" }}</td>
+    <td>
+      <a href="/restaurant/orders/{{ p.id }}/">Detail</a> -->
+      <!-- <a href="/restaurant/orders/">📦 Lihat Pesanan</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="6">Belum ada pesanan</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Pesanan Menunggu: {{ pending_count }}</h2>
+<a href="/restaurant/orders/">Lihat Pesanan Masuk</a>
+
+
+<br />
+<a href="/accounts/logout/">Logout</a> -->
+
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Dashboard Restoran</h2>
+
+<div class="row g-4">
+
+    <!-- Card Profil -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                {% if resto.foto_logo %}
+                <img src="{{ resto.foto_logo.url }}" class="img-fluid rounded mb-3" style="max-height: 120px;">
+                {% else %}
+                <i class="bi bi-shop" style="font-size: 3rem;"></i>
+                {% endif %}
+
+                <h4>{{ resto.nama_restoran }}</h4>
+                <p class="text-muted">{{ resto.kategori }}</p>
+                <a href="/accounts/restaurant/lengkapi-profil/" class="btn btn-outline-primary btn-sm">
+                    Edit Profil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Menu -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Kelola Menu</h5>
+                <p class="text-muted mb-2">Tambah, hapus, atau edit menu makanan.</p>
+                <a href="/restaurant/menu/" class="btn btn-primary">
+                    Kelola Menu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Pesanan Baru -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-primary">
+            <div class="card-body">
+                <h5>Pesanan Masuk</h5>
+                <h3 class="text-primary">{{ pending_count }}</h3>
+                <p class="text-muted">Pesanan menunggu konfirmasi</p>
+
+                <a href="/restaurant/orders/" class="btn btn-outline-primary">
+                    Lihat Pesanan
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+

@@ -23,5 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('restaurant/', include('restaurant.urls')),
+    path('orders/', include('orders.urls')),
+    path('driver/', include('orders.driver_urls')),
+
+
 ]
 

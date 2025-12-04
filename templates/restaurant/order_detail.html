@@ -1,0 +1,112 @@
+<!-- <h1>Detail Pesanan #{{ order.id }}</h1>
+
+<a href="/restaurant/orders/">← Kembali ke Daftar Pesanan</a>
+<br><br>
+
+<p><strong>Customer:</strong> {{ order.customer.username }}</p>
+<p><strong>Status Saat Ini:</strong> {{ order.status }}</p>
+<p><strong>Tanggal Pesan:</strong> {{ order.created_at|date:"d M Y H:i" }}</p>
+
+<hr>
+
+<h3>Daftar Item Pesanan</h3>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Menu</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td>{{ item.menu.nama_makanan }}</td>
+        <td>{{ item.qty }}</td>
+        <td>{{ item.subtotal }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Total Harga: Rp {{ order.total_harga }}</h3>
+
+<hr>
+
+<h3>Update Status Pesanan</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    <select name="status">
+        <option value="diterima" {% if order.status == "diterima" %}selected{% endif %}>Diterima</option>
+        <option value="diproses" {% if order.status == "diproses" %}selected{% endif %}>Diproses</option>
+        <option value="menunggu_driver" {% if order.status == "menunggu_driver" %}selected{% endif %}>Menunggu Driver</option>
+        <option value="dikirim" {% if order.status == "dikirim" %}selected{% endif %}>Dikirim</option>
+        <option value="selesai" {% if order.status == "selesai" %}selected{% endif %}>Selesai</option>
+        <option value="dibatalkan" {% if order.status == "dibatalkan" %}selected{% endif %}>Dibatalkan</option>
+    </select>
+
+    <button type="submit">Update</button>
+</form>
+
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    {% for msg in messages %}
+    Swal.fire({
+        title: "Berhasil!",
+        text: "{{ msg }}",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+    });
+    {% endfor %}
+</script>
+{% endif %} -->
+
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-3">Detail Pesanan #{{ order.id }}</h2>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <p><b>Pelanggan:</b> {{ order.customer.username }}</p>
+        <p><b>Total:</b> Rp {{ order.total_harga }}</p>
+
+        <p>
+            <b>Status:</b>
+            <span class="badge bg-success">{{ order.get_status_display }}</span>
+        </p>
+
+        <hr>
+
+        <h5>Item Pesanan</h5>
+        <ul class="list-group mb-3">
+            {% for item in items %}
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ item.menu.nama_makanan }} (x{{ item.qty }})</span>
+                <b>Rp {{ item.subtotal }}</b>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <form method="POST" action="/restaurant/orders/update-status/{{ order.id }}/">
+            {% csrf_token %}
+
+            <label class="form-label">Ubah Status</label>
+            <select name="status" class="form-select mb-3">
+                <option value="pending">Pending</option>
+                <option value="processing">Diproses</option>
+                <option value="ready">Siap Diambil</option>
+                <option value="on_delivery">Dalam Pengiriman</option>
+                <option value="completed">Selesai</option>
+            </select>
+
+            <button class="btn btn-primary" type="submit">Simpan</button>
+            <a href="/restaurant/orders/" class="btn btn-secondary">Kembali</a>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

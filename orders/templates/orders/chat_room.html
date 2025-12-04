@@ -1,0 +1,196 @@
+<style>
+  .chat-container {
+    width: 100%;
+    max-width: 500px;
+    height: 80vh;
+    margin: auto;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #ece5dd;
+    font-family: Arial;
+  }
+
+  /* Header */
+  .chat-header {
+    background: #075e54;
+    color: white;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* Chat box */
+  #chatBox {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #efeae2;
+  }
+
+  /* Bubble */
+  .bubble {
+    max-width: 70%;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .me {
+    background: #d4f8c4;
+    margin-left: auto;
+    border-bottom-right-radius: 0;
+  }
+
+  .other {
+    background: white;
+    margin-right: auto;
+    border-bottom-left-radius: 0;
+  }
+
+  /* Text area */
+  .chat-input {
+    display: flex;
+    background: #f0f0f0;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .chat-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+  }
+
+  .chat-input button {
+    margin-left: 10px;
+    background: #25d366;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+  }
+</style>
+
+<div class="chat-container">
+  <div class="chat-header">Chat Order #{{ order.id }}</div>
+
+  <div
+    id="chatBox"
+    style="
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+    "
+  >
+    <!-- pesan akan dimuat via AJAX -->
+
+    <form method="POST" class="chat-input">
+      {% csrf_token %}
+      <input type="text" name="message" placeholder="Ketik pesan..." />
+      <button type="submit">Kirim</button>
+    </form>
+  </div>
+
+  <br />
+  <a href="/orders/customer/">Kembali</a>
+
+  <script>
+    function loadChat() {
+      fetch(`/orders/${orderId}/chat/messages/`)
+        .then((response) => response.json())
+        .then((data) => {
+          const chatBox = document.getElementById("chatBox");
+          chatBox.innerHTML = "";
+
+          data.messages.forEach((msg) => {
+            let bubble = document.createElement("div");
+
+            bubble.style.margin = "10px 0";
+            bubble.style.padding = "8px";
+            bubble.style.borderRadius = "10px";
+            bubble.style.maxWidth = "70%";
+
+            if (msg.is_me) {
+              bubble.style.background = "#c2f0c2";
+              bubble.style.marginLeft = "auto";
+              bubble.innerHTML = `<b>Saya</b><br>${msg.message}<br><small>${msg.timestamp}</small>`;
+            } else {
+              bubble.style.background = "#e6e6e6";
+              bubble.style.marginRight = "auto";
+              bubble.innerHTML = `<b>${msg.sender}</b><br>${msg.message}<br><small>${msg.timestamp}</small>`;
+            }
+
+            chatBox.appendChild(bubble);
+          });
+
+          chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+
+    // Refresh tiap 3 detik
+    setInterval(loadChat, 3000);
+
+    // Panggil pertama kali
+    loadChat();
+  </script>
+</div>
+
+<script>
+let lastMessageCount = 0;
+
+// Sound untuk notifikasi
+const notifSound = new Audio("https://www.myinstants.com/media/sounds/tindeck_1.mp3");
+
+function loadChat() {
+    fetch(`/orders/${orderId}/chat/messages/`)
+        .then(res => res.json())
+        .then(data => {
+            const chatBox = document.getElementById("chatBox");
+
+            // cek apakah ada pesan baru
+            if (data.messages.length > lastMessageCount) {
+                // Jika bukan pertama kali load & ada pesan baru dari orang lain → bunyi notif
+                if (lastMessageCount > 0) {
+                    let lastMsg = data.messages[data.messages.length - 1];
+                    if (!lastMsg.is_me) {
+                        notifSound.play();
+                    }
+                }
+            }
+
+            lastMessageCount = data.messages.length;
+
+            chatBox.innerHTML = "";
+
+            data.messages.forEach(msg => {
+                let bubble = document.createElement("div");
+                bubble.classList.add("bubble");
+
+                if (msg.is_me) {
+                    bubble.classList.add("me");
+                    bubble.innerHTML = `${msg.message}<br><small>${msg.timestamp}</small>`;
+                } else {
+                    bubble.classList.add("other");
+                    bubble.innerHTML = `<b>${msg.sender}</b><br>${msg.message}<br><small>${msg.timestamp}</small>`;
+                }
+
+                chatBox.appendChild(bubble);
+            });
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+}
+
+// refresh setiap 2.5 detik
+setInterval(loadChat, 2500);
+
+// pertama kali load
+loadChat();
+</script>

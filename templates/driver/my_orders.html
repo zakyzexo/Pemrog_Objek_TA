@@ -1,0 +1,23 @@
+<h1>Pesanan Saya</h1>
+
+<table border="1" cellpadding="6">
+<tr>
+    <th>ID</th>
+    <th>Restoran</th>
+    <th>Status</th>
+    <th>Aksi</th>
+</tr>
+
+{% for order in orders %}
+<tr>
+    <td>{{ order.id }}</td>
+    <td>{{ order.restaurant.nama_restoran }}</td>
+    <td>{{ order.get_status_display }}</td>
+    <td>
+        {% if order.status == "delivering" %}
+        <a href="/driver/finish/{{ order.id }}/">Selesai</a>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</table>

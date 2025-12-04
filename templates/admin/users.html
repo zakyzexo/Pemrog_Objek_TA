@@ -1,0 +1,115 @@
+<h1>Daftar User</h1>
+
+<table border="1" cellpadding="6">
+  <tr>
+    <th>Username</th>
+    <th>Role</th>
+    <th>Status</th>
+    <th>Aksi</th>
+  </tr>
+
+  {% for u in users %}
+  <tr>
+    <td>{{ u.user.username }}</td>
+    <td>{{ u.role }}</td>
+
+    <td>
+      {% if u.is_deleted %}
+      <span style="color: red">Dihapus</span>
+      {% elif u.is_suspended %}
+      <span style="color: orange">Suspended</span>
+      {% else %}
+      <span style="color: green">Aktif</span>
+      {% endif %}
+    </td>
+
+    <td>
+      {% if not u.is_deleted %} {% if u.is_suspended %}
+      <a href="#" onclick="confirmUnsuspend('{{ u.user.id }}')">Unsuspend</a> |
+      {% else %}
+      <a href="#" onclick="confirmSuspend('{{ u.user.id }}')">Suspend</a> | {%
+      endif %}
+
+      <a href="#" onclick="confirmDelete('{{ u.user.id }}')" style="color: red"
+        >Delete</a
+      >
+
+      {% else %}
+      <a
+        href="#"
+        onclick="confirmRestore('{{ u.user.id }}')"
+        style="color: green"
+        >Restore</a
+      >
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function confirmSuspend(id) {
+    Swal.fire({
+        title: "Suspend User?",
+        text: "User tidak bisa login sampai diaktifkan kembali.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Suspend",
+        cancelButtonText: "Batal",
+        confirmButtonColor: "#d33"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/accounts/admin/user/suspend/${id}/`;
+        }
+    });
+}
+
+function confirmUnsuspend(id) {
+    Swal.fire({
+        title: "Aktifkan User?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Aktifkan",
+        cancelButtonText: "Batal",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/accounts/admin/user/unsuspend/${id}/`;
+        }
+    });
+}
+
+function confirmDelete(id) {
+    Swal.fire({
+        title: "Hapus User?",
+        text: "User tidak benar-benar hilang, hanya disembunyikan.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Hapus",
+        cancelButtonText: "Batal",
+        confirmButtonColor: "#d33"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/accounts/admin/user/delete/${id}/`;
+        }
+    });
+}
+
+function confirmRestore(id) {
+    Swal.fire({
+        title: "Pulihkan User?",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Pulihkan",
+        cancelButtonText: "Batal",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/accounts/admin/user/restore/${id}/`;
+        }
+    });
+}
+
+</script>
+

@@ -1,14 +1,39 @@
 <h1>Keranjang Belanja</h1>
 
-<ul>
-    {% for item in items %}
-        <li>
-            {{ item.menu.nama_makanan }} — {{ item.qty }} x {{ item.menu.harga }}  
-            = <strong>{{ item.subtotal }}</strong>
-        </li>
-    {% empty %}
-        <li>Keranjang kamu kosong.</li>
-    {% endfor %}
-</ul>
+{% if cart_items %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Menu</th>
+        <th>Harga</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+        <th>Aksi</th>
+    </tr>
 
-<p><strong>Total:</strong> {{ total }}</p>
+    {% for item in cart_items %}
+    <tr>
+        <td>{{ item.menu.nama_makanan }}</td>
+        <td>{{ item.menu.harga }}</td>
+        <td>{{ item.qty }}</td>
+        <td>{{ item.menu.harga|floatformat:0|add:""|add:item.qty|add:"" }}</td>
+        <td>
+            <a href="/restaurant/cart/delete/{{ item.id }}/">Hapus</a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<h2>Total: {{ total }}</h2>
+
+<br>
+<a href="/orders/checkout/">
+    <button style="padding: 10px;">Checkout</button>
+</a>
+
+{% else %}
+<p>Keranjang masih kosong.</p>
+{% endif %}
+
+<br>
+<a href="/accounts/customer/dashboard/">Kembali</a>

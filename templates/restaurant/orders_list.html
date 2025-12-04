@@ -1,0 +1,33 @@
+<h1>Daftar Pesanan Masuk</h1>
+
+<a href="/accounts/restaurant/dashboard/">← Kembali ke Dashboard</a>
+<br><br>
+
+<table border="1" cellpadding="7">
+    <tr>
+        <th>ID Pesanan</th>
+        <th>Customer</th>
+        <th>Status</th>
+        <th>Total Harga</th>
+        <th>Tanggal</th>
+        <th>Aksi</th>
+    </tr>
+
+    {% for order in orders %}
+    <tr>
+        <td>#{{ order.id }}</td>
+        <td>{{ order.customer.username }}</td>
+        <td>{{ order.status }}</td>
+        <td>{{ order.total_harga }}</td>
+        <td>{{ order.created_at|date:"d M Y H:i" }}</td>
+        <td>
+            <a href="#">Detail</a> 
+            <!-- nanti bikin halaman detail -->
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">Belum ada pesanan masuk.</td>
+    </tr>
+    {% endfor %}
+</table>

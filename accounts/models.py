@@ -14,6 +14,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
+    is_suspended = models.BooleanField(default=False)  # baru
+    is_deleted = models.BooleanField(default=False)    # baru
+
     def __str__(self):
         return f"{self.user.username} - {self.role}"
     
@@ -61,6 +64,9 @@ class DriverProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Driver ({self.plat_kendaraan})"
+
+
+
 
 
 # class Menu(models.Model):

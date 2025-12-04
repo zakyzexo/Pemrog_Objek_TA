@@ -1,0 +1,28 @@
+<h1>Checkout</h1>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Menu</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+    </tr>
+
+    {% for item in items %}
+    <tr>
+        <td>{{ item.menu.nama_makanan }}</td>
+        <td>{{ item.qty }}</td>
+        <td>{{ item.subtotal }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Total: {{ total }}</h2>
+
+<form method="POST" action="{% url 'process_checkout' %}">
+    {% csrf_token %}
+    <button type="submit">Buat Pesanan</button>
+</form>
+
+
+<br>
+<a href="/restaurant/cart/">Kembali ke Keranjang</a>

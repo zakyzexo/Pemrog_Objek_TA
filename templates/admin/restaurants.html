@@ -1,0 +1,17 @@
+<h1>Daftar Restoran</h1>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Nama</th>
+        <th>Alamat</th>
+        <th>Kategori</th>
+    </tr>
+
+    {% for r in restaurants %}
+    <tr>
+        <td>{{ r.nama_restoran }}</td>
+        <td>{{ r.alamat }}</td>
+        <td>{{ r.kategori }}</td>
+    </tr>
+    {% endfor %}
+</table>
