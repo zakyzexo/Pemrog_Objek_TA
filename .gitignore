@@ -13,3 +13,6 @@ foto_makanan/
 # venv
 env/
 venv/
+
+# Django static generated
+staticfiles/
