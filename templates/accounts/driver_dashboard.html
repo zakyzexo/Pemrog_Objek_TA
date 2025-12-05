@@ -1,12 +1,19 @@
-<h1>Dashboard Driver</h1>
+{% extends "base.html" %}
+{% block title %}Dashboard Driver{% endblock %}
 
-<p>Selamat datang, {{ user.username }}!</p>
+{% block content %}
+<h2 class="mb-3">🚗 Driver Dashboard</h2>
 
-<p>Pesanan sedang diantar: {{ ongoing }}</p>
-<p>Pesanan selesai: {{ finished }}</p>
+<div class="row g-3">
 
-<ul>
-    <li><a href="/driver/ready/">Lihat Pesanan Siap Diantar</a><br></li>
-    <li><a href="/driver/my-orders/">Pesanan Saya</a></li>
-    <li><a href="/accounts/logout/">Logout</a></li>
-</ul>
+    <div class="col-md-4">
+        <a href="/orders/driver/" class="text-decoration-none">
+            <div class="card shadow-sm p-3">
+                <h4>📦 Pesanan untuk Diantar</h4>
+                <p class="text-muted">Ambil & update status</p>
+            </div>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,9 +1,26 @@
-<h1>Dashboard Customer</h1>
+{% extends "base.html" %}
+{% block title %}Dashboard Customer{% endblock %}
 
-<p>Selamat datang, {{ user.username }}!</p>
+{% block content %}
+<h2 class="mb-4">Halo, {{ user.username }} 👋</h2>
 
-<ul>
-    <li><a href="/restaurant/">Lihat Restoran</a></li>
-    <li><a href="/restaurant/cart/">Lihat Keranjang</a></li>
-    <li><a href="/accounts/logout/">Logout</a></li>
-</ul>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="/restaurant/" class="text-decoration-none">
+            <div class="card shadow-sm p-3">
+                <h4>🍽 Lihat Restoran</h4>
+                <p class="text-muted">Cari makanan favoritmu</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="/orders/customer/" class="text-decoration-none">
+            <div class="card shadow-sm p-3">
+                <h4>🧾 Pesanan Saya</h4>
+                <p class="text-muted">Riwayat & Status Pesanan</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

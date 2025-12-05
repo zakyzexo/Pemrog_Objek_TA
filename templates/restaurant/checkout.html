@@ -1,42 +1,47 @@
-<h1>Checkout</h1>
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
 
-<h3>Daftar Pesanan:</h3>
+{% block content %}
+<h2 class="fw-bold mb-4 text-center">Checkout Pesanan</h2>
 
-<table border="1" cellpadding="6">
-    <tr>
-        <th>Menu</th>
-        <th>Qty</th>
-        <th>Subtotal</th>
-    </tr>
+<div class="row">
+    <div class="col-md-7">
+        <div class="card shadow-sm p-3">
+            <h5 class="fw-bold">Keranjang Anda</h5>
+            <hr>
 
-    {% for item in items %}
-    <tr>
-        <td>{{ item.menu.nama_makanan }}</td>
-        <td>{{ item.qty }}</td>
-        <td>{{ item.subtotal }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="3">Keranjang kosong</td></tr>
-    {% endfor %}
-</table>
+            {% for item in cart %}
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <div>
+                    <strong>{{ item.menu.nama_makanan }}</strong><br>
+                    <small class="text-muted">x{{ item.qty }}</small>
+                </div>
+                <div class="fw-bold">Rp {{ item.total }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-<h3>Total: {{ total }}</h3>
+    <div class="col-md-5">
+        <div class="card shadow-sm p-3">
+            <h5 class="fw-bold">Ringkasan Pembayaran</h5>
+            <hr>
 
-<br>
+            <p class="d-flex justify-content-between">
+                <span>Total Harga</span>
+                <strong>Rp {{ total }}</strong>
+            </p>
 
-<form method="POST">
-    {% csrf_token %}
+            <form action="{% url 'process_checkout' %}" method="POST">
+                {% csrf_token %}
 
-    <label>Alamat Pengiriman:</label><br>
-    <textarea name="alamat" required placeholder="Masukkan alamat lengkap"></textarea>
-    <br><br>
+                <label class="form-label mt-3">Alamat Pengantaran</label>
+                <textarea name="alamat" class="form-control" required></textarea>
 
-    {% if error %}
-    <p style="color: red;">{{ error }}</p>
-    {% endif %}
+                <button class="btn btn-success w-100 mt-4">Buat Pesanan</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-    <button type="submit">Buat Pesanan</button>
-</form>
-
-<br>
-<a href="/restaurant/cart/">← Kembali ke Keranjang</a>
+{% endblock %}

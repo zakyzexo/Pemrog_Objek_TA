@@ -1,196 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Chat Pesanan{% endblock %}
+
+{% block extra_css %}
 <style>
-  .chat-container {
-    width: 100%;
-    max-width: 500px;
-    height: 80vh;
-    margin: auto;
-    border: 1px solid #ccc;
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #ece5dd;
-    font-family: Arial;
-  }
-
-  /* Header */
-  .chat-header {
-    background: #075e54;
-    color: white;
-    padding: 12px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  /* Chat box */
-  #chatBox {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background: #efeae2;
-  }
-
-  /* Bubble */
-  .bubble {
-    max-width: 70%;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    font-size: 15px;
-    line-height: 1.3;
-  }
-
-  .me {
-    background: #d4f8c4;
-    margin-left: auto;
-    border-bottom-right-radius: 0;
-  }
-
-  .other {
-    background: white;
-    margin-right: auto;
-    border-bottom-left-radius: 0;
-  }
-
-  /* Text area */
-  .chat-input {
-    display: flex;
-    background: #f0f0f0;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-  }
-
-  .chat-input input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-  }
-
-  .chat-input button {
-    margin-left: 10px;
-    background: #25d366;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-  }
-</style>
-
-<div class="chat-container">
-  <div class="chat-header">Chat Order #{{ order.id }}</div>
-
-  <div
-    id="chatBox"
-    style="
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 10px;
-    "
-  >
-    <!-- pesan akan dimuat via AJAX -->
-
-    <form method="POST" class="chat-input">
-      {% csrf_token %}
-      <input type="text" name="message" placeholder="Ketik pesan..." />
-      <button type="submit">Kirim</button>
-    </form>
-  </div>
-
-  <br />
-  <a href="/orders/customer/">Kembali</a>
-
-  <script>
-    function loadChat() {
-      fetch(`/orders/${orderId}/chat/messages/`)
-        .then((response) => response.json())
-        .then((data) => {
-          const chatBox = document.getElementById("chatBox");
-          chatBox.innerHTML = "";
-
-          data.messages.forEach((msg) => {
-            let bubble = document.createElement("div");
-
-            bubble.style.margin = "10px 0";
-            bubble.style.padding = "8px";
-            bubble.style.borderRadius = "10px";
-            bubble.style.maxWidth = "70%";
-
-            if (msg.is_me) {
-              bubble.style.background = "#c2f0c2";
-              bubble.style.marginLeft = "auto";
-              bubble.innerHTML = `<b>Saya</b><br>${msg.message}<br><small>${msg.timestamp}</small>`;
-            } else {
-              bubble.style.background = "#e6e6e6";
-              bubble.style.marginRight = "auto";
-              bubble.innerHTML = `<b>${msg.sender}</b><br>${msg.message}<br><small>${msg.timestamp}</small>`;
-            }
-
-            chatBox.appendChild(bubble);
-          });
-
-          chatBox.scrollTop = chatBox.scrollHeight;
-        });
+    .chat-box {
+        height: 450px;
+        overflow-y: auto;
+        padding: 15px;
+        background: #eef2f5;
+        border-radius: 10px;
     }
 
-    // Refresh tiap 3 detik
-    setInterval(loadChat, 3000);
+    .bubble {
+        padding: 10px 14px;
+        border-radius: 15px;
+        max-width: 70%;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+    .me { background: #0d6efd; color: white; margin-left: auto; }
+    .other { background: white; border: 1px solid #ddd; }
+</style>
+{% endblock %}
 
-    // Panggil pertama kali
-    loadChat();
-  </script>
+{% block content %}
+
+<h3 class="mb-3">Chat dengan {{ lawan }}</h3>
+
+<div class="chat-box mb-3" id="chatBox">
+    {% for msg in chat_messages %}
+        {% if msg.sender == user %}
+            <div class="bubble me">{{ msg.message }}</div>
+        {% else %}
+            <div class="bubble other">{{ msg.message }}</div>
+        {% endif %}
+    {% endfor %}
 </div>
 
+<form method="POST" id="chatForm">
+    {% csrf_token %}
+    <div class="input-group">
+        <input type="text" name="message" class="form-control" placeholder="Tulis pesan..." required>
+        <button class="btn btn-primary">Kirim</button>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
 <script>
-let lastMessageCount = 0;
+    // Auto-scroll saat membuka/refresh
+    const chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-// Sound untuk notifikasi
-const notifSound = new Audio("https://www.myinstants.com/media/sounds/tindeck_1.mp3");
-
-function loadChat() {
-    fetch(`/orders/${orderId}/chat/messages/`)
-        .then(res => res.json())
-        .then(data => {
-            const chatBox = document.getElementById("chatBox");
-
-            // cek apakah ada pesan baru
-            if (data.messages.length > lastMessageCount) {
-                // Jika bukan pertama kali load & ada pesan baru dari orang lain → bunyi notif
-                if (lastMessageCount > 0) {
-                    let lastMsg = data.messages[data.messages.length - 1];
-                    if (!lastMsg.is_me) {
-                        notifSound.play();
-                    }
-                }
-            }
-
-            lastMessageCount = data.messages.length;
-
-            chatBox.innerHTML = "";
-
-            data.messages.forEach(msg => {
-                let bubble = document.createElement("div");
-                bubble.classList.add("bubble");
-
-                if (msg.is_me) {
-                    bubble.classList.add("me");
-                    bubble.innerHTML = `${msg.message}<br><small>${msg.timestamp}</small>`;
-                } else {
-                    bubble.classList.add("other");
-                    bubble.innerHTML = `<b>${msg.sender}</b><br>${msg.message}<br><small>${msg.timestamp}</small>`;
-                }
-
-                chatBox.appendChild(bubble);
+    // Auto-refresh setiap 3 detik
+    setInterval(() => {
+        fetch(window.location.href)
+            .then(r => r.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                const updatedChat = doc.getElementById("chatBox").innerHTML;
+                chatBox.innerHTML = updatedChat;
+                chatBox.scrollTop = chatBox.scrollHeight;
             });
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-        });
-}
-
-// refresh setiap 2.5 detik
-setInterval(loadChat, 2500);
-
-// pertama kali load
-loadChat();
+    }, 3000);
 </script>
+{% endblock %}
