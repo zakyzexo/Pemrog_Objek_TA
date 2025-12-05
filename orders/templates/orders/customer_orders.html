@@ -1,95 +1,24 @@
-<h1>Daftar Pesanan Saya</h1>
+{% extends "base.html" %}
+{% block title %}Pesanan Saya{% endblock %}
 
-<style>
-.order-card {
-    border: 1px solid #ddd;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 8px;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-}
-.pending { background: #ff9800; }
-.processing { background: #2196f3; }
-.delivering { background: #9c27b0; }
-.finished { background: #4caf50; }
-.cancelled { background: #f44336; }
-
-.order-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-</style>
-
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Restoran</th>
-        <th>Status</th>
-        <th>Total</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-    </tr>
-
-    {% for order in orders %}
-    <tr>
-        <td>#{{ order.id }}</td>
-        <td>{{ order.total_price }}</td>
-
-        <td>
-            {% if order.status == "pending" %}
-                <span style="color: orange;">Menunggu Konfirmasi</span>
-
-            {% elif order.status == "processing" %}
-                <span style="color: blue;">Diproses</span>
-
-            {% elif order.status == "delivering" %}
-                <span style="color: purple;">Sedang Diantar</span>
-
-            {% elif order.status == "finished" %}
-                <span style="color: green;">Selesai</span>
-
-            {% elif order.status == "cancelled" %}
-                <span style="color: red;">Dibatalkan</span>
-            {% endif %}
-        </td>
-
-        <td>{{ order.created_at }}</td>
-    </tr>
+{% block content %}
+<div class="container py-3">
+  <h3>Pesanan Saya</h3>
+  <div class="list-group mt-3">
+    {% for o in orders %}
+      <a href="{% url 'customer_order_detail' o.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div>
+          <strong>Order #{{ o.id }}</strong> <br>
+          <small class="text-muted">{{ o.created_at }}</small>
+        </div>
+        <div class="text-end">
+          <div class="fw-bold">Rp {{ o.total_harga }}</div>
+          <span class="badge {% if o.status in 'diterima,diproses' %}bg-warning{% elif o.status == 'dikirim' %}bg-info{% elif o.status == 'selesai' %}bg-success{% else %}bg-secondary{% endif %}">{{ o.get_status_display }}</span>
+        </div>
+      </a>
     {% empty %}
-    <tr>
-        <td colspan="4">Belum ada pesanan.</td>
-    </tr>
+      <div class="card p-3">Belum ada pesanan.</div>
     {% endfor %}
-</table>
-
-<td>
-    <a href="/orders/detail/{{ order.id }}/">Lihat Detail</a>
-</td>
-
-
-<br>
-<a href="/accounts/customer/dashboard/">Kembali</a>
-
-{% if messages %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    {% for msg in messages %}
-    Swal.fire({
-        icon: "{{ msg.tags }}",
-        title: "{{ msg }}",
-        timer: 2000,
-        showConfirmButton: false
-    });
-    {% endfor %}
-</script>
-{% endif %}
-
+  </div>
+</div>
+{% endblock %}

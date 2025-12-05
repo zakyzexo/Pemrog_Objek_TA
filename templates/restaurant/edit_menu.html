@@ -1,56 +1,42 @@
-<h1>Edit Menu</h1>
+{% extends "base.html" %}
+{% block title %}Edit Menu{% endblock %}
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <label>Nama Menu:</label><br>
-    <input type="text" name="nama_makanan" value="{{ menu.nama_makanan }}" required><br><br>
-
-    <label>Harga:</label><br>
-    <input type="number" name="harga" value="{{ menu.harga }}" required><br><br>
-
-    <label>Deskripsi:</label><br>
-    <textarea name="deskripsi">{{ menu.deskripsi }}</textarea><br><br>
-
-    <label>Status:</label><br>
-    <select name="status">
-        <option value="available" {% if menu.status == "available" %}selected{% endif %}>Tersedia</option>
-        <option value="sold_out" {% if menu.status == "sold_out" %}selected{% endif %}>Habis</option>
-    </select>
-    <br><br>
-
-    <label>Foto Lama:</label><br>
-    {% if menu.foto_makanan %}
-        <img src="{{ menu.foto_makanan.url }}" width="100"><br>
-    {% else %}
-        <i>Tidak ada foto</i><br>
-    {% endif %}
-    <br>
-
-    <label>Ganti Foto:</label>
-    <input type="file" name="foto_makanan"><br><br>
-
-    <button type="submit">Simpan Perubahan</button>
-</form>
-
-<br>
-<a href="/restaurant/menu/">Kembali</a>
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-function showLoading() {
-    Swal.fire({
-        title: "Menyimpan...",
-        didOpen: () => {
-            Swal.showLoading();
-        },
-        allowOutsideClick: false,
-        allowEscapeKey: false
-    });
-}
-</script>
-
-<form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
-
+{% block content %}
+<div class="container py-3">
+  <div class="col-md-6 mx-auto">
+    <div class="card p-3">
+      <h4>Edit Menu</h4>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Nama</label>
+          <input name="nama_makanan" class="form-control" value="{{ menu.nama_makanan }}" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Harga</label>
+          <input name="harga" type="number" class="form-control" value="{{ menu.harga }}" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Deskripsi</label>
+          <textarea name="deskripsi" class="form-control">{{ menu.deskripsi }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Foto (opsional)</label>
+          <input name="foto_makanan" type="file" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option value="available" {% if menu.status == 'available' %}selected{% endif %}>Tersedia</option>
+            <option value="sold_out" {% if menu.status == 'sold_out' %}selected{% endif %}>Habis</option>
+          </select>
+        </div>
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'daftar_menu' %}" class="btn btn-outline-secondary">Batal</a>
+          <button class="btn btn-primary">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -2,17 +2,37 @@
 {% block title %}Dashboard Driver{% endblock %}
 
 {% block content %}
-<h2 class="mb-3">🚗 Driver Dashboard</h2>
+<div class="container mt-4">
 
-<div class="row g-3">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>🚚 Dashboard Driver</h2>
+        <a href="/accounts/logout/" class="btn btn-outline-danger">Logout</a>
+    </div>
 
-    <div class="col-md-4">
-        <a href="/orders/driver/" class="text-decoration-none">
-            <div class="card shadow-sm p-3">
-                <h4>📦 Pesanan untuk Diantar</h4>
-                <p class="text-muted">Ambil & update status</p>
+    <div class="row">
+
+        <!-- Pesanan yang harus diantar -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">📦 Pesanan Untuk Diantar</h5>
+                    <p>Lihat dan ambil pesanan yang perlu diantar.</p>
+                    <a href="/orders/driver/" class="btn btn-primary">Lihat Pesanan</a>
+                </div>
             </div>
-        </a>
+        </div>
+
+        <!-- Riwayat -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">🧾 Riwayat</h5>
+                    <p>Lihat pesanan yang sudah selesai.</p>
+                    <a href="/orders/driver/history/" class="btn btn-secondary">Lihat Riwayat</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>

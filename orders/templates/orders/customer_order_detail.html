@@ -1,27 +1,41 @@
-<h1>Detail Pesanan #{{ order.id }}</h1>
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }}{% endblock %}
 
-<p><b>Restoran:</b> {{ order.restaurant.nama_restoran }}</p>
-<p><b>Status:</b> {{ order.get_status_display }}</p>
-<p><b>Total:</b> Rp {{ order.total_price }}</p>
-<p><b>Tanggal:</b> {{ order.created_at }}</p>
+{% block content %}
+<div class="container py-3">
+  <div class="card p-3 mb-3">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h5>Order #{{ order.id }}</h5>
+        <small class="text-muted">{{ order.created_at }}</small>
+      </div>
+      <div class="text-end">
+        <div class="fw-bold">Rp {{ order.total_harga }}</div>
+        <span class="badge bg-info">{{ order.get_status_display }}</span>
+      </div>
+    </div>
+  </div>
 
-<hr>
+  <div class="card p-3 mb-3">
+    <h6>Detail Item</h6>
+    <ul class="list-group">
+      {% for it in order.items.all %}
+        <li class="list-group-item d-flex justify-content-between">
+          <div>{{ it.menu.nama_makanan }} <small class="text-muted">x{{ it.qty }}</small></div>
+          <div class="fw-bold">Rp {{ it.subtotal }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 
-<h3>Item Pesanan:</h3>
-<ul>
-    {% for item in items %}
-        <li>{{ item.menu.nama_makanan }} — {{ item.qty }} x Rp {{ item.price }}</li>
-    {% endfor %}
-</ul>
-
-<hr>
-
-{% if order.status == 'pending' %}
-    <a href="/orders/cancel/{{ order.id }}/" 
-       onclick="return confirm('Yakin ingin membatalkan pesanan?')">
-       <button style="background:red;color:white">Batalkan Pesanan</button>
-    </a>
-{% endif %}
-
-<br><br>
-<a href="/orders/customer/">Kembali ke daftar pesanan</a>
+  <div class="d-flex gap-2">
+    {% if order.status == "diterima" %}
+      <form method="POST" action="{% url 'cancel_order' order.id %}">
+        {% csrf_token %}
+        <button class="btn btn-outline-danger">Batalkan Pesanan</button>
+      </form>
+    {% endif %}
+    <a class="btn btn-primary" href="{% url 'chat_order' order.id %}">Buka Chat</a>
+  </div>
+</div>
+{% endblock %}

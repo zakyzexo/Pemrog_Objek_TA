@@ -1,28 +1,52 @@
-<h1>Checkout</h1>
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>Menu</th>
-        <th>Qty</th>
-        <th>Subtotal</th>
-    </tr>
+{% block content %}
+<div class="container py-3">
+  <div class="row">
+    <div class="col-lg-7">
+      <div class="card p-3 mb-3">
+        <h5>Keranjang</h5>
+        <hr>
+        {% for item in cart %}
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div>
+              <strong>{{ item.menu.nama_makanan }}</strong>
+              <div class="small text-muted">x{{ item.qty }}</div>
+            </div>
+            <div class="fw-bold">Rp {{ item.subtotal }}</div>
+          </div>
+        {% empty %}
+          <div class="text-center py-4 text-muted">Keranjang kosong</div>
+        {% endfor %}
+      </div>
+    </div>
 
-    {% for item in items %}
-    <tr>
-        <td>{{ item.menu.nama_makanan }}</td>
-        <td>{{ item.qty }}</td>
-        <td>{{ item.subtotal }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    <div class="col-lg-5">
+      <div class="card p-3">
+        <h5>Ringkasan Pembayaran</h5>
+        <hr>
+        <p class="d-flex justify-content-between"><span>Total</span><strong>Rp {{ total }}</strong></p>
 
-<h2>Total: {{ total }}</h2>
+        <form method="POST" action="{% url 'process_checkout' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Alamat Pengantaran</label>
+            <textarea name="alamat" class="form-control" required>{{ default_alamat }}</textarea>
+          </div>
 
-<form method="POST" action="{% url 'process_checkout' %}">
-    {% csrf_token %}
-    <button type="submit">Buat Pesanan</button>
-</form>
+          <div class="mb-3">
+            <label class="form-label">Metode Pembayaran</label>
+            <select name="metode" class="form-select" required>
+              <option value="cod">Cash on Delivery</option>
+              <option value="transfer">Transfer Bank</option>
+            </select>
+          </div>
 
-
-<br>
-<a href="/restaurant/cart/">Kembali ke Keranjang</a>
+          <button type="submit" class="btn btn-success w-100">Buat Pesanan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,110 +1,55 @@
-<!-- <h1>Dashboard Restoran</h1>
-<h3>{{ resto.nama_restoran }}</h3>
-
-<hr />
-
-<h2>Statistik</h2>
-
-<div style="display: flex; gap: 20px">
-  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
-    <h3>Total Menu</h3>
-    <p style="font-size: 24px">{{ total_menu }}</p>
-  </div>
-
-  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
-    <h3>Pesanan Masuk</h3>
-    <p style="font-size: 24px">{{ total_masuk }}</p>
-  </div>
-
-  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
-    <h3>Pesanan Selesai</h3>
-    <p style="font-size: 24px">{{ total_selesai }}</p>
-  </div>
-
-  <div style="padding: 15px; border: 1px solid #ccc; width: 180px">
-    <h3>Pesanan Batal</h3>
-    <p style="font-size: 24px">{{ total_batal }}</p>
-  </div>
-</div>
-
-<hr />
-
-<h2>Menu Pintas</h2>
-<ul>
-  <li><a href="/restaurant/menu/">Kelola Menu</a></li>
-  <li><a href="/restaurant/orders/">Pesanan Masuk</a></li>
-</ul>
-
-<hr />
-
-<h2>5 Pesanan Terbaru</h2>
-
-<table border="1" cellpadding="6">
-  <tr>
-    <th>ID</th>
-    <th>Customer</th>
-    <th>Status</th>
-    <th>Total</th>
-    <th>Tanggal</th>
-    <th>Aksi</th>
-  </tr>
-
-  {% for p in pesanan_terbaru %}
-  <tr>
-    <td>#{{ p.id }}</td>
-    <td>{{ p.customer.username }}</td>
-    <td>{{ p.get_status_display }}</td>
-    <td>{{ p.total_harga }}</td>
-    <td>{{ p.created_at|date:"d M Y H:i" }}</td>
-    <td>
-      <a href="/restaurant/orders/{{ p.id }}/">Detail</a> -->
-      <!-- <a href="/restaurant/orders/">📦 Lihat Pesanan</a>
-    </td>
-  </tr>
-  {% empty %}
-  <tr>
-    <td colspan="6">Belum ada pesanan</td>
-  </tr>
-  {% endfor %}
-</table>
-
-<h2>Pesanan Menunggu: {{ pending_count }}</h2>
-<a href="/restaurant/orders/">Lihat Pesanan Masuk</a>
-
-
-<br />
-<a href="/accounts/logout/">Logout</a> -->
-
 {% extends "base.html" %}
-{% block title %}Dashboard Restoran{% endblock %}
+{% block title %}Dashboard Restaurant{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">📊 Dashboard Restoran</h2>
 
-<div class="mb-4">
-    <h4>{{ resto.nama_restoran }}</h4>
-    <p class="text-muted">{{ resto.alamat }}</p>
-</div>
+<div class="container mt-4">
 
-<div class="row g-3">
-    <div class="col-md-4">
-        <a href="/restaurant/menu/" class="text-decoration-none">
-            <div class="card shadow-sm p-3">
-                <h4>📋 Kelola Menu</h4>
-                <p class="text-muted">Tambah / Edit / Hapus menu</p>
-            </div>
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🍽  Dashboard Restoran</h2>
+        <a href="/accounts/logout/" class="btn btn-outline-danger">Logout</a>
     </div>
 
-    <div class="col-md-4">
-        <a href="/orders/restaurant/" class="text-decoration-none">
-            <div class="card shadow-sm p-3">
-                <h4>🛒 Pesanan Masuk</h4>
-                <p class="text-muted">Pantau status pesanan</p>
-            </div>
-        </a>
+    <!-- Profil resto -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="card-title">{{ resto.nama_restoran }}</h4>
+            <p class="text-muted mb-1">{{ resto.alamat }}</p>
+            <p class="mb-0">{{ resto.deskripsi }}</p>
+
+            <hr>
+
+            <a href="/accounts/restaurant/lengkapi-profil/" class="btn btn-primary">
+                Edit Profil Restoran
+            </a>
+        </div>
     </div>
+
+    <!-- Menu & Pesanan -->
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">📋 Kelola Menu</h5>
+                    <p>Tambah, edit, dan hapus menu restoran.</p>
+                    <a href="/restaurant/menu/" class="btn btn-success">Kelola Menu</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">🛒 Pesanan Masuk</h5>
+                    <p>Lihat pesanan terbaru dari customer.</p>
+                    <a href="/orders/restaurant/" class="btn btn-warning">Lihat Pesanan</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}
-
-
